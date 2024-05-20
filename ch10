@@ -1,0 +1,233 @@
+import random
+import pandas as pd
+import altair as alt
+from datetime import datetime, timedelta
+
+class Purchase:
+    def __init__(self):
+        self.total = 0
+
+    def increment(self, price):
+        self.total += price
+
+    def reset(self):
+        self.total = 0
+
+    def __str__(self):
+        return "Sale: $" + str(self.total)
+
+materials = ('cotton', 'satin', 'polyester', 'nylon', 'cashmere', 'leather', 'silk')
+clothing_types = ('jacket', 'pants', 'shorts', 'vest', 'hat', 'shirt')
+
+class Inventory:
+    def __init__(self):
+        self.clothing = []
+        num_clothing = random.randint(10, 20)
+        for i in range(num_clothing):
+            material = random.choice(materials)
+            clothing_type = random.choice(clothing_types)
+            clothing = Clothes(material, clothing_type)
+            self.clothing.append(clothing)
+
+    def add_clothing(self, clothing):
+        self.clothing.append(clothing)
+
+    def display_inventory(self):
+        inventory_list = [str(clothing) for clothing in self.clothing]
+        return '\n'.join(inventory_list)
+
+adjectives1 = ('comfortable', 'stylish', 'durable')
+adjectives2 = ('fashionable', 'cozy', 'elegant')
+adjectives3 = ('trendy', 'casual', 'sophisticated')
+
+class Clothes:
+    def __init__(self, material, clothing_type):
+        self.price = round(random.uniform(10, 20), 2)
+        self.material = material
+        self.clothing_type = random.choice(adjectives1) + ' ' + random.choice(adjectives2) + ' ' + random.choice(adjectives3) + ' ' + clothing_type
+
+    def __str__(self):
+        return f'material: {self.material}, clothing_type: {self.clothing_type}, price: ${self.price}'
+
+class Store:
+    def __init__(self, name):
+        self.name = name
+        self.inventory = Inventory()
+        self.customers = []
+        self.purchase = Purchase()
+
+    def add_customer(self, customer):
+        self.customers.append(customer)
+
+    def getCustomers(self):
+        for customer in self.customers:
+            print("customer " + customer.getName() + " is busy shopping.")
+
+    def run(self):
+        print("Welcome to " + self.name + "!")
+        print(self.inventory.display_inventory())
+        print("We have " + str(len(self.customers)) + " customers today.")
+        for customer in self.customers:
+            print("Customer " + customer.name + " is shopping.")
+            item = random.choice(self.inventory.clothing)
+            customer.add_to_order(item)
+            print("Customer " + customer.name + " added " + str(item) + " to their order.")
+            self.purchase.increment(item.price)
+            print("Customer " + customer.name + " checked out and paid $" + str(item.price) + ".")
+        print("The total sales for " + self.name + " today is $" + str(self.purchase.total) + ".")
+
+    def reset(self):
+        self.purchase.reset()
+
+    def __str__(self):
+        return self.name + " (Sales: $" + str(self.purchase.total) + ")"
+
+class Customer:
+    def __init__(self, name):
+        self.name = name
+        self.order = Order()
+
+    def getName(self):
+        return self.name
+
+    def add_to_order(self, product):
+        self.order.add(product)
+
+    def __str__(self):
+        return self.name + " (" + str(self.order) + ")"
+
+class Order:
+    def __init__(self):
+        self.products = []
+
+    def add(self, product):
+        self.products.append(product)
+
+    def __str__(self):
+        result = "Order:\n"
+        for product in self.products:
+            result += str(product) + "\n"
+        return result
+
+class Analytics:
+    def __init__(self):
+        self.store_analytics = []
+
+    def add_analytics(self, analytics):
+        self.store_analytics.extend(analytics)
+
+    def make_csv(self, filename):
+        df = pd.DataFrame(self.store_analytics)
+        print(df)
+        df.to_csv(filename, index=False)
+
+class Corporation:
+    def __init__(self, name):
+        self.name = name
+        self.stores = []
+        self.analytics = []
+
+    def add_store(self, store):
+        self.stores.append(store)
+
+    def simulate(self):
+        print("Welcome to " + self.name + "!")
+        print("We have " + str(len(self.stores)) + " stores in our corporation.")
+        for store in self.stores:
+            store.run()
+        total_sales = 0
+        for store in self.stores:
+            total_sales += store.purchase.total
+            dict_A = {"name": store.name, "total_sales": store.purchase.total}
+            self.analytics.append(dict_A)
+        print("The total sales for " + self.name + " today is $" + str(total_sales) + ".")
+
+    def reset(self):
+        self.analytics = []
+        for store in self.stores:
+            store.reset()
+
+    def get_analytics(self):
+        return self.analytics
+
+    def display_analytics(self):
+        for i in self.analytics:
+            print(i)
+
+    def __str__(self):
+        result = self.name + ":\n"
+        for store in self.stores:
+            result += str(store) + "\n"
+        return result
+
+names = ('Emily', 'Daniel', 'Jessica', 'Liam', 'Olivia', 'Noah', 'Sophia', 'Ethan', 'Isabella', 'Mason',
+         'Alice', 'Bob', 'Charlie', 'David', 'Eve', 'Frank', 'Grace', 'Harry', 'Ivy', 'Jack')
+
+corp = Corporation("Benigno Corporation")
+
+store1 = Store("Thrift Store 1")
+store2 = Store("Thrift Store 2")
+store3 = Store("Thrift Store 3")
+
+store1_customers = [Customer(names[i]) for i in range(10)]
+store2_customers = [Customer(names[i]) for i in range(10, 15)]
+store3_customers = [Customer(names[i]) for i in range(15, 20)]
+
+for customer in store1_customers:
+    store1.add_customer(customer)
+
+for customer in store2_customers:
+    store2.add_customer(customer)
+
+for customer in store3_customers:
+    store3.add_customer(customer)
+
+corp.add_store(store1)
+corp.add_store(store2)
+corp.add_store(store3)
+
+start_date = datetime(2024, 1, 1)
+
+for week in range(52):
+    print(f"Running simulation for week {week + 1}")
+    corp.simulate()
+    weekly_analytics = Analytics()
+    weekly_analytics.add_analytics(corp.get_analytics())
+    week_start_date = start_date + timedelta(weeks=week)
+    filename = week_start_date.strftime('%B-%d-%Y') + '_analytics.csv'
+    weekly_analytics.make_csv(filename)
+    corp.reset()
+
+dataframes = []
+for week in range(52):
+    week_start_date = start_date + timedelta(weeks=week)
+    filename = week_start_date.strftime('%B-%d-%Y') + '_analytics.csv'
+    df = pd.read_csv(filename)
+    df['week'] = week + 1
+    dataframes.append(df)
+
+yearly_data = pd.concat(dataframes, ignore_index=True)
+
+yearly_sales = yearly_data.groupby('name')['total_sales'].sum().reset_index()
+
+bar_chart = alt.Chart(yearly_sales).mark_bar().encode(
+    x='name',
+    y='total_sales',
+    color='name',
+    tooltip=['name', 'total_sales']
+).properties(
+    title='Yearly Sales per Store'
+)
+
+weekly_sales = yearly_data.groupby(['week', 'name'])['total_sales'].sum().reset_index()
+
+line_chart = alt.Chart(weekly_sales).mark_line().encode(
+    x='week:O',
+    y='total_sales',
+    color='name',
+    tooltip=['week', 'name', 'total_sales']
+).properties(
+    title='Weekly Sales Trends per Store'
+)
+
+bar_chart & line_chart

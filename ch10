@@ -1,174 +1,188 @@
-import random
-import pandas as pd
-import altair as alt
-from datetime import datetime, timedelta
+import random  # Import the random module for generating random values
+import pandas as pd  # Import pandas for data manipulation and analysis
+import altair as alt  # Import altair for creating interactive charts
+from datetime import datetime, timedelta  # Import datetime and timedelta for handling dates
 
+# Class representing a purchase with a total sales amount
 class Purchase:
     def __init__(self):
-        self.total = 0
+        self.total = 0  # Initialize the total sales to zero
 
     def increment(self, price):
-        self.total += price
+        self.total += price  # Increment the total sales by the given price
 
     def reset(self):
-        self.total = 0
+        self.total = 0  # Reset the total sales to zero
 
     def __str__(self):
-        return "Sale: $" + str(self.total)
+        return "Sale: $" + str(self.total)  # Return a string representation of the total sales
 
+# Lists containing possible materials and clothing types
 materials = ('cotton', 'satin', 'polyester', 'nylon', 'cashmere', 'leather', 'silk')
 clothing_types = ('jacket', 'pants', 'shorts', 'vest', 'hat', 'shirt')
 
+# Class representing the inventory of a store
 class Inventory:
     def __init__(self):
-        self.clothing = []
-        num_clothing = random.randint(10, 20)
+        self.clothing = []  # Initialize the clothing list
+        num_clothing = random.randint(10, 20)  # Randomly determine the number of clothing items
         for i in range(num_clothing):
-            material = random.choice(materials)
-            clothing_type = random.choice(clothing_types)
-            clothing = Clothes(material, clothing_type)
-            self.clothing.append(clothing)
+            material = random.choice(materials)  # Randomly select a material
+            clothing_type = random.choice(clothing_types)  # Randomly select a clothing type
+            clothing = Clothes(material, clothing_type)  # Create a new Clothes object
+            self.clothing.append(clothing)  # Add the clothing item to the inventory
 
     def add_clothing(self, clothing):
-        self.clothing.append(clothing)
+        self.clothing.append(clothing)  # Add a new clothing item to the inventory
 
     def display_inventory(self):
-        inventory_list = [str(clothing) for clothing in self.clothing]
-        return '\n'.join(inventory_list)
+        inventory_list = [str(clothing) for clothing in self.clothing]  # Create a list of string representations of clothing items
+        return '\n'.join(inventory_list)  # Return the inventory as a single string
 
+# Lists containing possible adjectives for clothing descriptions
 adjectives1 = ('comfortable', 'stylish', 'durable')
 adjectives2 = ('fashionable', 'cozy', 'elegant')
 adjectives3 = ('trendy', 'casual', 'sophisticated')
 
+# Class representing a clothing item
 class Clothes:
     def __init__(self, material, clothing_type):
-        self.price = round(random.uniform(10, 20), 2)
-        self.material = material
-        self.clothing_type = random.choice(adjectives1) + ' ' + random.choice(adjectives2) + ' ' + random.choice(adjectives3) + ' ' + clothing_type
+        self.price = round(random.uniform(10, 20), 2)  # Randomly generate a price between 10 and 20
+        self.material = material  # Set the material
+        self.clothing_type = random.choice(adjectives1) + ' ' + random.choice(adjectives2) + ' ' + random.choice(adjectives3) + ' ' + clothing_type  # Generate a descriptive clothing type
 
     def __str__(self):
-        return f'material: {self.material}, clothing_type: {self.clothing_type}, price: ${self.price}'
+        return f'material: {self.material}, clothing_type: {self.clothing_type}, price: ${self.price}'  # Return a string representation of the clothing item
 
+# Class representing a store
 class Store:
     def __init__(self, name):
-        self.name = name
-        self.inventory = Inventory()
-        self.customers = []
-        self.purchase = Purchase()
+        self.name = name  # Set the store name
+        self.inventory = Inventory()  # Create an inventory for the store
+        self.customers = []  # Initialize the customer list
+        self.purchase = Purchase()  # Initialize the purchase object
 
     def add_customer(self, customer):
-        self.customers.append(customer)
+        self.customers.append(customer)  # Add a customer to the store
 
     def getCustomers(self):
         for customer in self.customers:
-            print("customer " + customer.getName() + " is busy shopping.")
+            print("customer " + customer.getName() + " is busy shopping.")  # Print the names of customers who are shopping
 
     def run(self):
         print("Welcome to " + self.name + "!")
-        print(self.inventory.display_inventory())
+        print(self.inventory.display_inventory())  # Display the store's inventory
         print("We have " + str(len(self.customers)) + " customers today.")
         for customer in self.customers:
             print("Customer " + customer.name + " is shopping.")
-            item = random.choice(self.inventory.clothing)
-            customer.add_to_order(item)
+            item = random.choice(self.inventory.clothing)  # Randomly select an item from the inventory
+            customer.add_to_order(item)  # Add the item to the customer's order
             print("Customer " + customer.name + " added " + str(item) + " to their order.")
-            self.purchase.increment(item.price)
+            self.purchase.increment(item.price)  # Increment the total sales by the item's price
             print("Customer " + customer.name + " checked out and paid $" + str(item.price) + ".")
         print("The total sales for " + self.name + " today is $" + str(self.purchase.total) + ".")
 
     def reset(self):
-        self.purchase.reset()
+        self.purchase.reset()  # Reset the store's total sales
 
     def __str__(self):
-        return self.name + " (Sales: $" + str(self.purchase.total) + ")"
+        return self.name + " (Sales: $" + str(self.purchase.total) + ")"  # Return a string representation of the store
 
+# Class representing a customer
 class Customer:
     def __init__(self, name):
-        self.name = name
-        self.order = Order()
+        self.name = name  # Set the customer's name
+        self.order = Order()  # Create an order for the customer
 
     def getName(self):
-        return self.name
+        return self.name  # Return the customer's name
 
     def add_to_order(self, product):
-        self.order.add(product)
+        self.order.add(product)  # Add a product to the customer's order
 
     def __str__(self):
-        return self.name + " (" + str(self.order) + ")"
+        return self.name + " (" + str(self.order) + ")"  # Return a string representation of the customer
 
+# Class representing a customer's order
 class Order:
     def __init__(self):
-        self.products = []
+        self.products = []  # Initialize the list of products in the order
 
     def add(self, product):
-        self.products.append(product)
+        self.products.append(product)  # Add a product to the order
 
     def __str__(self):
         result = "Order:\n"
         for product in self.products:
-            result += str(product) + "\n"
+            result += str(product) + "\n"  # Create a string representation of the order
         return result
 
+# Class for handling analytics
 class Analytics:
     def __init__(self):
-        self.store_analytics = []
+        self.store_analytics = []  # Initialize the list for storing analytics data
 
     def add_analytics(self, analytics):
-        self.store_analytics.extend(analytics)
+        self.store_analytics.extend(analytics)  # Add analytics data to the list
 
     def make_csv(self, filename):
-        df = pd.DataFrame(self.store_analytics)
+        df = pd.DataFrame(self.store_analytics)  # Create a DataFrame from the analytics data
         print(df)
-        df.to_csv(filename, index=False)
+        df.to_csv(filename, index=False)  # Save the DataFrame to a CSV file
 
+# Class representing a corporation with multiple stores
 class Corporation:
     def __init__(self, name):
-        self.name = name
-        self.stores = []
-        self.analytics = []
+        self.name = name  # Set the corporation's name
+        self.stores = []  # Initialize the list of stores
+        self.analytics = []  # Initialize the list for storing analytics data
 
     def add_store(self, store):
-        self.stores.append(store)
+        self.stores.append(store)  # Add a store to the corporation
 
     def simulate(self):
         print("Welcome to " + self.name + "!")
         print("We have " + str(len(self.stores)) + " stores in our corporation.")
         for store in self.stores:
-            store.run()
+            store.run()  # Run the store simulation
         total_sales = 0
         for store in self.stores:
-            total_sales += store.purchase.total
+            total_sales += store.purchase.total  # Sum the total sales from all stores
             dict_A = {"name": store.name, "total_sales": store.purchase.total}
-            self.analytics.append(dict_A)
+            self.analytics.append(dict_A)  # Add the store's sales data to the analytics list
         print("The total sales for " + self.name + " today is $" + str(total_sales) + ".")
 
     def reset(self):
-        self.analytics = []
+        self.analytics = []  # Reset the analytics data
         for store in self.stores:
-            store.reset()
+            store.reset()  # Reset the sales data for each store
 
     def get_analytics(self):
-        return self.analytics
+        return self.analytics  # Return the analytics data
 
     def display_analytics(self):
         for i in self.analytics:
-            print(i)
+            print(i)  # Display the analytics data
 
     def __str__(self):
         result = self.name + ":\n"
         for store in self.stores:
-            result += str(store) + "\n"
+            result += str(store) + "\n"  # Create a string representation of the corporation
         return result
 
+# List containing possible names for customers
 names = ('Emily', 'Daniel', 'Jessica', 'Liam', 'Olivia', 'Noah', 'Sophia', 'Ethan', 'Isabella', 'Mason',
          'Alice', 'Bob', 'Charlie', 'David', 'Eve', 'Frank', 'Grace', 'Harry', 'Ivy', 'Jack')
 
+# Create the corporation
 corp = Corporation("Benigno Corporation")
 
+# Create stores
 store1 = Store("Thrift Store 1")
 store2 = Store("Thrift Store 2")
 store3 = Store("Thrift Store 3")
 
+# Add customers to the stores
 store1_customers = [Customer(names[i]) for i in range(10)]
 store2_customers = [Customer(names[i]) for i in range(10, 15)]
 store3_customers = [Customer(names[i]) for i in range(15, 20)]
@@ -182,12 +196,15 @@ for customer in store2_customers:
 for customer in store3_customers:
     store3.add_customer(customer)
 
+# Add stores to the corporation
 corp.add_store(store1)
 corp.add_store(store2)
 corp.add_store(store3)
 
+# Start date for the first week
 start_date = datetime(2024, 1, 1)
 
+# Run the simulation 52 times and save each week's data to a separate CSV file
 for week in range(52):
     print(f"Running simulation for week {week + 1}")
     corp.simulate()
@@ -198,18 +215,22 @@ for week in range(52):
     weekly_analytics.make_csv(filename)
     corp.reset()
 
+# Load data from all 52 CSV files into a single DataFrame
 dataframes = []
 for week in range(52):
     week_start_date = start_date + timedelta(weeks=week)
     filename = week_start_date.strftime('%B-%d-%Y') + '_analytics.csv'
     df = pd.read_csv(filename)
-    df['week'] = week + 1
+    df['week'] = week + 1  # Add a column for the week number
     dataframes.append(df)
 
+# Concatenate all DataFrames into one
 yearly_data = pd.concat(dataframes, ignore_index=True)
 
+# Summarize total sales per store
 yearly_sales = yearly_data.groupby('name')['total_sales'].sum().reset_index()
 
+# Create a bar chart for yearly sales per store
 bar_chart = alt.Chart(yearly_sales).mark_bar().encode(
     x='name',
     y='total_sales',
@@ -219,8 +240,10 @@ bar_chart = alt.Chart(yearly_sales).mark_bar().encode(
     title='Yearly Sales per Store'
 )
 
+# Summarize weekly sales
 weekly_sales = yearly_data.groupby(['week', 'name'])['total_sales'].sum().reset_index()
 
+# Create a line chart for weekly sales trends
 line_chart = alt.Chart(weekly_sales).mark_line().encode(
     x='week:O',
     y='total_sales',
@@ -230,4 +253,5 @@ line_chart = alt.Chart(weekly_sales).mark_line().encode(
     title='Weekly Sales Trends per Store'
 )
 
+# Display both charts
 bar_chart & line_chart
